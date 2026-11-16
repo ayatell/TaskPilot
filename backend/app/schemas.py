@@ -62,3 +62,15 @@ class TaskOut(BaseModel):
     due_date: date | None
     estimated_minutes: int
     actual_minutes: int | None
+
+
+class ProgressOut(BaseModel):
+    done: int
+    total: int
+
+
+class DashboardOut(BaseModel):
+    today: list[TaskOut]
+    upcoming: list[TaskOut]
+    overdue: list[TaskOut]
+    progress: ProgressOut

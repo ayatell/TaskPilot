@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import models  # noqa: F401  (registers tables)
-from app.api import auth, tasks
+from app.api import auth, tasks, dashboard
 from app.core.config import settings
 from app.db.session import Base, engine
 
@@ -27,6 +27,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(tasks.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/health")
