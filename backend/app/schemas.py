@@ -1,8 +1,7 @@
-from datetime import date
-from typing import Literal
+from datetime import date, datetime
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
-
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -74,3 +73,95 @@ class DashboardOut(BaseModel):
     upcoming: list[TaskOut]
     overdue: list[TaskOut]
     progress: ProgressOut
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=4000)
+    conversation_id: int | None = None
+    document_ids: list[int] | None = Field(default=None, max_length=50)
+    broad: bool = False        # True = spread excerpts across documents (summaries)
+
+
+class ProposedAction(BaseModel):
+    type: Literal["create_task"]
+    task: TaskCreate
+
+
+class RankedTask(BaseModel):
+    task_id: int
+    title: str
+    due_date: date | None
+    priority: int
+    score: int
+    quadrant: Literal["do_now", "schedule", "quick", "later"]
+    reason: Literal["overdue", "due_today", "due_soon", "due_this_week", "later", "no_deadline"]
+
+
+class ChatResponse(BaseModel):
+    conversation_id: int
+    reply: str
+    actions: list[ProposedAction]
+    ranking: list[RankedTask] | None = None
+
+
+class TaskBulkCreate(BaseModel):
+    tasks: list[TaskCreate] = Field(min_length=1, max_length=20)
+
+
+class PlanRequest(BaseModel):
+    # {"2026-11-16": 120, ...} = available minutes per day
+    availability: dict[date, Annotated[int, Field(ge=0, le=1440)]] = Field(min_length=1, max_length=31)
+
+
+class BlockOut(BaseModel):
+    task_id: int
+    title: str
+    day: date
+    minutes: int
+
+
+class PlanOut(BaseModel):
+    blocks: list[BlockOut]
+    unscheduled: list[int]
+    warnings: list[str]
+
+class DocumentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    filename: str
+    created_at: datetime
+
+class SavedItemCreate(BaseModel):
+    kind: Literal["quiz", "summary"]
+    title: str = Field(min_length=1, max_length=200)
+    content: str = Field(min_length=1, max_length=20000)
+
+
+class SavedItemOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    kind: str
+    title: str
+    content: str
+    created_at: datetime
+
+class QuizRequest(BaseModel):
+    document_ids: list[int] | None = Field(default=None, max_length=50)
+    count: int = Field(default=5, ge=3, le=10)
+
+class QuizQuestion(BaseModel):
+    question: str = Field(min_length=1, max_length=500)
+    options: list[str] = Field(min_length=2, max_length=6)
+    answer: int = Field(ge=0)
+    explanation: str = Field(default="", max_length=1000)
+
+    @model_validator(mode="after")
+    def answer_in_range(self):
+        if self.answer >= len(self.options):
+            raise ValueError("answer index out of range")
+        return self
+
+
+class QuizOut(BaseModel):
+    title: str
+    questions: list[QuizQuestion]

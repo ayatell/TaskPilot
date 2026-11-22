@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_current_user
 from app.db.session import get_db
 from app.models import Task, User
-from app.schemas import TaskCreate, TaskOut, TaskUpdate
+from app.schemas import TaskCreate, TaskOut, TaskUpdate, TaskBulkCreate
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -30,6 +30,15 @@ def create_task(data: TaskCreate, db: Session = Depends(get_db), user: User = De
     db.refresh(task)
     return task
 
+@router.post("/bulk", response_model=list[TaskOut], status_code=201)
+def create_tasks_bulk(data: TaskBulkCreate, db: Session = Depends(get_db),
+                      user: User = Depends(get_current_user)):
+    created = [Task(**t.model_dump(), user_id=user.id) for t in data.tasks]
+    db.add_all(created)
+    db.commit()
+    for t in created:
+        db.refresh(t)
+    return created
 
 @router.get("/{task_id}", response_model=TaskOut)
 def get_task(task_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):

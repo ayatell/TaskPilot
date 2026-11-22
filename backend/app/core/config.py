@@ -10,7 +10,8 @@ class Settings(BaseSettings):
     access_token_minutes: int = 60
     reset_token_minutes: int = 15
     llm_base_url: str = "https://api.groq.com/openai/v1"
-    llm_model: str = "llama-3.3-70b-versatile"
+    llm_model: str = "openai/gpt-oss-120b"
+    llm_api_key: str = ""
     cors_origins: str = "http://localhost:5173"
 
 
