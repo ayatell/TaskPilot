@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import ARRAY, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import ARRAY, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint, func, JSON
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.session import Base
@@ -32,25 +32,48 @@ class Task(Base):
     bandit_arm: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
+
 class Conversation(Base):
     __tablename__ = "conversations"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
     title: Mapped[str] = mapped_column(String(200), default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
+    theme: Mapped[str] = mapped_column(String(30), default="default")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
 class Message(Base):
     __tablename__ = "messages"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+
     conversation_id: Mapped[int] = mapped_column(
-        ForeignKey("conversations.id", ondelete="CASCADE"), index=True
+        ForeignKey("conversations.id", ondelete="CASCADE"),
+        index=True
     )
-    role: Mapped[str] = mapped_column(String(10))   # "user" or "assistant"
+
+    role: Mapped[str] = mapped_column(String(10))
+
     content: Mapped[str] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    # Stores extra information such as proposed tasks and rankings.
+    metadata_json: Mapped[dict | None] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=True
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
 
 class Document(Base):
     __tablename__ = "documents"

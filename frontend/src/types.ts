@@ -58,3 +58,43 @@ export type QuizQuestion = {
   explanation: string
 }
 export type QuizData = { title: string; questions: QuizQuestion[] }
+
+export type ConversationTheme =
+  | 'default'
+  | 'blue'
+  | 'purple'
+  | 'green'
+  | 'pink'
+
+export type Conversation = {
+  id: number
+  title: string
+  created_at: string
+  updated_at: string
+}
+
+export type ConversationMessage = {
+  id: number
+  role: 'user' | 'assistant'
+  content: string
+  metadata_json?: {
+    actions?: ProposedAction[]
+    ranking?: RankedTask[]
+  } | null
+  created_at: string
+}
+
+export type ConversationOut = { id: number; title: string; created_at: string }
+export type MessageOut = {
+  id: number
+  role: 'user' | 'assistant'
+  content: string
+  metadata_json?: {
+    actions?: ProposedAction[]
+    ranking?: RankedTask[]
+    quiz?: QuizData
+  } | null
+  created_at: string
+}
+
+export type SummaryData = { title: string; content: string }

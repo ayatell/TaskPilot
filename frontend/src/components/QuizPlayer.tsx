@@ -1,27 +1,55 @@
+
 import { useState } from 'react'
 import { useI18n } from '../i18n'
 import type { QuizQuestion } from '../types'
 
-export default function QuizPlayer({ questions }: { questions: QuizQuestion[] }) {
+type Props = {
+  questions: QuizQuestion[]
+}
+
+export default function QuizPlayer({ questions }: Props) {
   const { t } = useI18n()
+
   const [index, setIndex] = useState(0)
-  const [picked, setPicked] = useState<number | null>(null)
-  const [answers, setAnswers] = useState<number[]>([])
+  const [answers, setAnswers] = useState<(number | null)[]>([])
   const [finished, setFinished] = useState(false)
 
   const total = questions.length
-  const score = answers.filter((a, i) => a === questions[i].answer).length
 
-  const choose = (i: number) => {
-    if (picked !== null) return // one answer per question
-    setPicked(i)
-    setAnswers((a) => [...a, i])
+  const score = answers.reduce<number>(
+     (sum, answer, i) =>
+        sum + (answer === questions[i]?.answer ? 1 : 0),
+  0
+  )
+
+  if (total === 0) {
+    return (
+      <div className="alert alert-error">
+        No questions are available in this quiz.
+      </div>
+    )
+  }
+
+  const currentQuestion = questions[index]
+  const picked = answers[index] ?? null
+  const answered = picked !== null
+  const correct = picked === currentQuestion.answer
+
+  const choose = (optionIndex: number) => {
+    if (answered || finished) return
+
+    setAnswers((previous) => {
+      const updated = [...previous]
+      updated[index] = optionIndex
+      return updated
+    })
   }
 
   const next = () => {
+    if (!answered) return
+
     if (index + 1 < total) {
-      setIndex(index + 1)
-      setPicked(null)
+      setIndex((previous) => previous + 1)
     } else {
       setFinished(true)
     }
@@ -29,96 +57,172 @@ export default function QuizPlayer({ questions }: { questions: QuizQuestion[] })
 
   const restart = () => {
     setIndex(0)
-    setPicked(null)
     setAnswers([])
     setFinished(false)
   }
 
-  /* ---------- final score ---------- */
   if (finished) {
-    const pct = Math.round((score / total) * 100)
-    const message = pct >= 80 ? t('quiz.great') : pct >= 50 ? t('quiz.good') : t('quiz.keep')
-    return (
-      <div className="stack">
-        <div className="stat items-center text-center">
-          <span className="stat-label">{t('quiz.score')}</span>
-          <span className="stat-value text-5xl">{score} / {total}</span>
-          <span className="stat-label">{pct}% · {message}</span>
-        </div>
-        <progress className="progress" value={score} max={total} />
+    const percentage = total > 0 ? Math.round((score / total) * 100) : 0
 
-        <div className="card-title">{t('quiz.review')}</div>
-        <ol className="stack gap-3 text-sm">
-          {questions.map((q, i) => {
-            const ok = answers[i] === q.answer
+    const feedback =
+      percentage >= 80
+        ? t('quiz.great')
+        : percentage >= 50
+          ? t('quiz.good')
+          : t('quiz.keep')
+
+    return (
+      <div className="stack gap-4">
+        <div className="card text-center p-5">
+          <div className="stat-label">{t('quiz.score')}</div>
+
+          <div className="stat-value text-5xl">
+            {score}/{total}
+          </div>
+
+          <div className="stat-label">
+            {percentage}% · {feedback}
+          </div>
+
+          <progress
+            className="progress"
+            value={score ?? 0} 
+            max={total}
+          />
+        </div>
+
+        <h3 className="card-title">{t('quiz.review')}</h3>
+
+        <ol className="stack gap-4">
+          {questions.map((question, i) => {
+            const answer = answers[i]
+            const isCorrect = answer === question.answer
+
             return (
-              <li key={i} className="stack gap-1">
-                <div className="font-semibold">{i + 1}. {q.question}</div>
-                <div className={`badge ${ok ? 'badge-done' : 'badge-do_now'} w-fit`}>
-                  {ok ? '✓' : '✗'} {t('quiz.yourAnswer')}: {q.options[answers[i]]}
+              <li key={i} className="card p-3 stack gap-2">
+                <strong>
+                  {i + 1}. {question.question}
+                </strong>
+
+                <div className={`badge ${isCorrect ? 'badge-done' : 'badge-do_now'}`}>
+                  {isCorrect ? '✓' : '✗'} {t('quiz.yourAnswer')}:{' '}
+                  {answer === null
+                    ? 'Not answered'
+                    : question.options[answer]}
                 </div>
-                {!ok && (
+
+                {!isCorrect && (
                   <div className="badge badge-done w-fit">
-                    ✓ {t('quiz.goodAnswer')}: {q.options[q.answer]}
+                    ✓ {t('quiz.goodAnswer')}:{' '}
+                    {question.options[question.answer]}
                   </div>
                 )}
-                {q.explanation && <div className="stat-label">{q.explanation}</div>}
+
+                {question.explanation && (
+                  <p className="text-sm opacity-80">
+                    {question.explanation}
+                  </p>
+                )}
               </li>
             )
           })}
         </ol>
 
-        <button className="btn btn-gradient w-fit" onClick={restart}>↻ {t('quiz.retry')}</button>
+        <button
+          type="button"
+          className="btn btn-gradient w-fit"
+          onClick={restart}
+        >
+          ↻ {t('quiz.retry')}
+        </button>
       </div>
     )
   }
 
-  /* ---------- question ---------- */
-  const q = questions[index]
-  const answered = picked !== null
-  const isRight = picked === q.answer
-
   return (
-    <div className="stack">
+    <div className="stack gap-4">
       <div className="row justify-between">
-        <span className="badge badge-primary">{t('quiz.question', { n: index + 1, total })}</span>
-        <span className="stat-label">{score} ✓</span>
+        <span className="badge badge-primary">
+          {t('quiz.question', {
+            n: index + 1,
+            total,
+          })}
+        </span>
+
+        <span className="stat-label">
+          {score} ✓
+        </span>
       </div>
-      <progress className="progress" value={index + (answered ? 1 : 0)} max={total} />
 
-      <h3>{q.question}</h3>
+      <progress
+        className="progress"
+        value={index + (answered ? 1 : 0)}
+        max={total}
+      />
 
-      <div className="stack gap-2" role="group" aria-label={q.question}>
-        {q.options.map((opt, i) => {
-          let cls = 'btn-outline'
-          if (answered && i === q.answer) cls = 'btn-success'
-          else if (answered && i === picked) cls = 'btn-danger'
+      <h3 className="text-lg font-semibold">
+        {currentQuestion.question}
+      </h3>
+
+      <div
+        className="stack gap-2"
+        role="group"
+        aria-label={currentQuestion.question}
+      >
+        {currentQuestion.options.map((option, i) => {
+          let style = 'btn-outline'
+
+          if (answered && i === currentQuestion.answer) {
+            style = 'btn-success'
+          } else if (answered && i === picked) {
+            style = 'btn-danger'
+          }
+
           return (
             <button
               key={i}
               type="button"
-              className={`btn ${cls} h-auto w-full justify-start whitespace-normal py-3 text-left ${answered && cls === 'btn-outline' ? 'opacity-60' : ''}`}
+              disabled={answered}
               aria-pressed={picked === i}
+              className={`btn ${style} h-auto w-full justify-start whitespace-normal py-3 text-left`}
               onClick={() => choose(i)}
             >
-              <span className="font-bold">{String.fromCharCode(65 + i)}.</span> {opt}
+              <span className="font-bold">
+                {String.fromCharCode(65 + i)}.
+              </span>
+
+              <span>{option}</span>
             </button>
           )
         })}
       </div>
 
       {answered && (
-        <div className={`alert ${isRight ? 'alert-success' : 'alert-error'}`} role="status">
+        <div
+          className={`alert ${correct ? 'alert-success' : 'alert-error'}`}
+          role="status"
+        >
           <div>
-            <strong>{isRight ? t('quiz.correct') : t('quiz.wrong')}</strong>
-            {q.explanation && <div>{q.explanation}</div>}
+            <strong>
+              {correct ? t('quiz.correct') : t('quiz.wrong')}
+            </strong>
+
+            {currentQuestion.explanation && (
+              <p>{currentQuestion.explanation}</p>
+            )}
           </div>
         </div>
       )}
 
       {answered && (
-        <button className="btn btn-gradient w-fit" onClick={next}>
-          {index + 1 < total ? t('quiz.next') : t('quiz.finish')}
+        <button
+          type="button"
+          className="btn btn-gradient w-fit"
+          onClick={next}
+        >
+          {index + 1 < total
+            ? t('quiz.next')
+            : t('quiz.finish')}
         </button>
       )}
     </div>

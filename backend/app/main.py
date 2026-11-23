@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import models  # noqa: F401  (registers tables)
-from app.api import auth, chat, dashboard, documents, planning, tasks, library, quiz
+from app.api import auth, chat, dashboard, documents, planning, tasks, library, quiz, conversations, summaries
 from app.core.config import settings
 from app.db.session import Base, engine
 
@@ -33,6 +33,8 @@ app.include_router(chat.router)
 app.include_router(documents.router)
 app.include_router(library.router)
 app.include_router(quiz.router)
+app.include_router(conversations.router)
+app.include_router(summaries.router)
 
 
 

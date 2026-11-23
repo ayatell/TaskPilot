@@ -6,6 +6,7 @@ from app.api.deps import get_current_user
 from app.db.session import get_db
 from app.models import Task, User
 from app.schemas import TaskCreate, TaskOut, TaskUpdate, TaskBulkCreate
+from app.services import bandit
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -49,9 +50,13 @@ def get_task(task_id: int, db: Session = Depends(get_db), user: User = Depends(g
 def update_task(task_id: int, data: TaskUpdate, db: Session = Depends(get_db),
                 user: User = Depends(get_current_user)):
     task = _own(db, user, task_id)
+    was_done = task.status == "done"
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(task, field, value)
-    # bandit feedback will be hooked in here in Phase 5
+    if (not was_done and task.status == "done" and task.actual_minutes
+            and task.bandit_arm is not None):
+        r = bandit.reward(task.bandit_arm, task.estimated_minutes, task.actual_minutes)
+        bandit.update(db, user.id, task.subject or "", task.bandit_arm, r)
     db.commit()
     db.refresh(task)
     return task

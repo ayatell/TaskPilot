@@ -134,7 +134,7 @@ class DocumentOut(BaseModel):
 class SavedItemCreate(BaseModel):
     kind: Literal["quiz", "summary"]
     title: str = Field(min_length=1, max_length=200)
-    content: str = Field(min_length=1, max_length=20000)
+    content: str = Field(min_length=1, max_length=100000)
 
 
 class SavedItemOut(BaseModel):
@@ -145,9 +145,12 @@ class SavedItemOut(BaseModel):
     content: str
     created_at: datetime
 
+
 class QuizRequest(BaseModel):
     document_ids: list[int] | None = Field(default=None, max_length=50)
-    count: int = Field(default=5, ge=3, le=10)
+    count: int = Field(default=5, ge=3, le=50)
+    from_tasks: bool = False
+
 
 class QuizQuestion(BaseModel):
     question: str = Field(min_length=1, max_length=500)
@@ -165,3 +168,65 @@ class QuizQuestion(BaseModel):
 class QuizOut(BaseModel):
     title: str
     questions: list[QuizQuestion]
+
+ConversationTheme = Literal[
+    "default",
+    "blue",
+    "purple",
+    "green",
+    "pink"
+]
+
+
+class ConversationCreate(BaseModel):
+    title: str = Field(
+        default="New conversation",
+        min_length=1,
+        max_length=200
+    )
+
+    theme: ConversationTheme = "default"
+
+
+class ConversationUpdate(BaseModel):
+    title: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=200
+    )
+
+    theme: ConversationTheme | None = None
+
+
+class ConversationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    theme: str
+    created_at: datetime
+    updated_at: datetime
+
+class ConversationRename(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+
+class MessageOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    role: str
+    content: str
+    metadata_json: dict | None = None
+    created_at: datetime
+
+
+class MessageCreate(BaseModel):
+    role: Literal["user", "assistant"] = "assistant"
+    content: str = Field(min_length=1, max_length=4000)
+    metadata_json: dict | None = None
+
+class SummaryRequest(BaseModel):
+    document_ids: list[int] | None = Field(default=None, max_length=50)
+
+class SummaryOut(BaseModel):
+    title: str
+    content: str

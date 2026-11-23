@@ -36,7 +36,8 @@ MANIFEST
 htmlcov/
 .tox/
 .nox/
-
+pytest.init
+smoke_check.py
 # === Node.js & Frontend ===
 node_modules/
 dist/

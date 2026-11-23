@@ -547,3 +547,68 @@
     scrollbar-color: var(--color-border) transparent;
   }
 }
+
+/* Conversation history */
+
+.conversation-sidebar {
+  width: 280px;
+  min-width: 260px;
+  padding: 1rem;
+  overflow-y: auto;
+  background-color: var(--color-card);
+  border-right: 1px solid var(--color-border);
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.conversation-item:hover {
+  background-color: var(--color-muted);
+}
+
+.conversation-item.active {
+  background-color: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+/* Per-conversation theme backgrounds */
+
+.chat-theme-default {
+  --chat-theme: var(--color-primary);
+  --chat-theme-soft: var(--color-secondary);
+}
+
+.chat-theme-blue {
+  --chat-theme: #2563eb;
+  --chat-theme-soft: #dbeafe;
+}
+
+.chat-theme-purple {
+  --chat-theme: #9333ea;
+  --chat-theme-soft: #f3e8ff;
+}
+
+.chat-theme-green {
+  --chat-theme: #15803d;
+  --chat-theme-soft: #dcfce7;
+}
+
+.chat-theme-pink {
+  --chat-theme: #db2777;
+  --chat-theme-soft: #fce7f3;
+}
+
+.chat-theme-default .bubble-user,
+.chat-theme-blue .bubble-user,
+.chat-theme-purple .bubble-user,
+.chat-theme-green .bubble-user,
+.chat-theme-pink .bubble-user {
+  background: var(--chat-theme);
+}
