@@ -1,0 +1,15 @@
+[33m6662a35[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: checkout: moving from 6662a35e817c5975bb5afc9e0711f6997e0b4325 to main
+[33m6662a35[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{1}: checkout: moving from backend to origin/main
+[33m2472873[m[33m ([m[1;32mbackend[m[33m)[m HEAD@{2}: commit: fix
+[33m66294d0[m[33m ([m[1;31morigin/backend[m[33m)[m HEAD@{3}: checkout: moving from 6662a35e817c5975bb5afc9e0711f6997e0b4325 to backend
+[33m6662a35[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{4}: checkout: moving from backend to origin/main
+[33m66294d0[m[33m ([m[1;31morigin/backend[m[33m)[m HEAD@{5}: checkout: moving from 6662a35e817c5975bb5afc9e0711f6997e0b4325 to backend
+[33m6662a35[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{6}: checkout: moving from backend to origin/main
+[33m66294d0[m[33m ([m[1;31morigin/backend[m[33m)[m HEAD@{7}: checkout: moving from 6662a35e817c5975bb5afc9e0711f6997e0b4325 to backend
+[33m6662a35[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{8}: checkout: moving from ccf39ad6ff279eac7a25800cb1e6a5ecca61100b to origin/main
+[33mccf39ad[m HEAD@{9}: commit: fixed some probs and updated the version
+[33m6662a35[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{10}: checkout: moving from backend to origin/main
+[33m66294d0[m[33m ([m[1;31morigin/backend[m[33m)[m HEAD@{11}: checkout: moving from main to backend
+[33m6662a35[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{12}: commit: Summary on its own page and interractive Quiz
+[33m116900f[m HEAD@{13}: commit: remove smoke_check file
+[33m66294d0[m[33m ([m[1;31morigin/backend[m[33m)[m HEAD@{14}: merge backend: Fast-forward

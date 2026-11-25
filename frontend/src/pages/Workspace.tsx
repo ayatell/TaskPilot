@@ -320,9 +320,8 @@ export default function Workspace({
             <button
               key={item.id}
               type="button"
-              className={`btn btn-sm shrink-0 ${
-                tab === item.id ? 'btn-primary' : 'btn-ghost'
-              }`}
+              className={`btn btn-sm shrink-0 ${tab === item.id ? 'btn-primary' : 'btn-ghost'
+                }`}
               aria-current={tab === item.id ? 'page' : undefined}
               onClick={() => setTab(item.id)}
             >

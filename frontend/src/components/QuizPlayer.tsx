@@ -17,9 +17,9 @@ export default function QuizPlayer({ questions }: Props) {
   const total = questions.length
 
   const score = answers.reduce<number>(
-     (sum, answer, i) =>
-        sum + (answer === questions[i]?.answer ? 1 : 0),
-  0
+    (sum, answer, i) =>
+      sum + (answer === questions[i]?.answer ? 1 : 0),
+    0
   )
 
   if (total === 0) {
@@ -86,7 +86,7 @@ export default function QuizPlayer({ questions }: Props) {
 
           <progress
             className="progress"
-            value={score ?? 0} 
+            value={score ?? 0}
             max={total}
           />
         </div>

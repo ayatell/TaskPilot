@@ -205,9 +205,8 @@ export default function ChatScreen({
       .map((document) => document.filename)
       .join(', ')
 
-    return `${t(`lib.kind.${kind}`)} · ${
-      names || new Date().toLocaleDateString()
-    }`.slice(0, 200)
+    return `${t(`lib.kind.${kind}`)} · ${names || new Date().toLocaleDateString()
+      }`.slice(0, 200)
   }
 
   // Save an assistant reply to the Library.
@@ -847,9 +846,8 @@ export default function ChatScreen({
         {msgs.map((message) => (
           <div key={message.id} className="flex flex-col gap-2">
             <div
-              className={`bubble ${
-                message.role === 'user' ? 'bubble-user' : 'bubble-assistant'
-              }`}
+              className={`bubble ${message.role === 'user' ? 'bubble-user' : 'bubble-assistant'
+                }`}
             >
               {message.text}
             </div>

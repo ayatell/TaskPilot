@@ -254,7 +254,7 @@ const dict = { en, fr } as const
 
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (key: string, vars?: Record<string, string | number>) => string }
 
-const I18nContext = createContext<Ctx>({ lang: 'fr', setLang: () => {}, t: (k) => k })
+const I18nContext = createContext<Ctx>({ lang: 'fr', setLang: () => { }, t: (k) => k })
 
 function initialLang(): Lang {
   try {

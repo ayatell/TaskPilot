@@ -13,9 +13,9 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType>({
   theme: 'light',
-  setTheme: () => {},
-  toggle: () => {},
-  toggleTheme: () => {},
+  setTheme: () => { },
+  toggle: () => { },
+  toggleTheme: () => { },
   isDark: false,
 })
 
